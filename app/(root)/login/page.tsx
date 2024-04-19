@@ -1,7 +1,7 @@
-import { SignIn } from "@clerk/nextjs";
+import { login, signup } from "./actions";
 import Image from "next/image";
 
-export default function Page() {
+export default function LoginPage() {
   return (
     <section className="bg-white">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
@@ -24,7 +24,14 @@ export default function Page() {
               Discover your dream home - your ultimate real estate destination.
               Find, explore, and secure your perfect property with ease.
             </p>
-            <SignIn />;
+            <form>
+              <label htmlFor="email">Email:</label>
+              <input id="email" name="email" type="email" required />
+              <label htmlFor="password">Password:</label>
+              <input id="password" name="password" type="password" required />
+              <button formAction={login}>Log in</button>
+              <button formAction={signup}>Sign up</button>
+            </form>
           </div>
         </main>
       </div>
