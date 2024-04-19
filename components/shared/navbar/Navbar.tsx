@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const path = usePathname();
+  const { user, isSignedIn } = useUser();
   return (
     <div className="flex justify-between items-center py-1 px-10 shadow-sm w-full bg-white">
       <ul className="hidden md:flex gap-6">
@@ -36,14 +38,20 @@ const Navbar = () => {
         />
       </Link>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         <Button className="flex gap-1">
           <Plus className="h-4 w-4" />
           Post an Ad
         </Button>
-        <Button variant="outline" className="hover:text-white">
-          Log in
-        </Button>
+        {isSignedIn ? (
+          <UserButton />
+        ) : (
+          <Link href={"/sign-in"}>
+            <Button variant="outline" className="hover:text-white">
+              Log in
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );
