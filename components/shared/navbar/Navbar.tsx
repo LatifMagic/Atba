@@ -9,8 +9,12 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const path = usePathname();
   const { user, isSignedIn } = useUser();
+
   return (
-    <div className="flex justify-between items-center py-1 px-10 shadow-sm w-full bg-white">
+    <div
+      className="flex justify-between items-center py-1 px-10 shadow-sm w-full bg-white 
+    relative z-10"
+    >
       <ul className="hidden md:flex gap-6">
         <Link href="/">
           <li
