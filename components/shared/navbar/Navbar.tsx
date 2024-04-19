@@ -1,16 +1,39 @@
 "use client";
+import { logout } from "@/app/(root)/logout/action";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/utils/supabase/client";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { User } from "@supabase/supabase-js";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const path = usePathname();
-  const { user, isSignedIn } = useUser();
+  // const { user, isSignedIn } = useUser();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function getUser() {
+      const supabase = createClient();
+
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data?.user) {
+        console.log("no user");
+      } else {
+        setUser(data.user);
+      }
+    }
+    getUser();
+  }, []);
+
   return (
-    <div className="flex justify-between items-center py-1 px-10 shadow-sm w-full bg-white">
+    <div
+      className="flex justify-between items-center py-1 px-10 shadow-sm w-full bg-white 
+    relative z-10"
+    >
       <ul className="hidden md:flex gap-6">
         <Link href="/">
           <li
@@ -43,10 +66,12 @@ const Navbar = () => {
           <Plus className="h-4 w-4" />
           Post an Ad
         </Button>
-        {isSignedIn ? (
-          <UserButton />
+        {user ? (
+          <form action={logout}>
+            <Button type="submit">Logout</Button>
+          </form>
         ) : (
-          <Link href={"/sign-in"}>
+          <Link href={"/login"}>
             <Button variant="outline" className="hover:text-white">
               Log in
             </Button>
