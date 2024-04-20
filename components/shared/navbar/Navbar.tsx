@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const path = usePathname();
-  const { user, isSignedIn } = useUser();
 
   return (
     <div
@@ -25,10 +24,18 @@ const Navbar = () => {
             Buy
           </li>
         </Link>
-        <li className="hover:text-accent font-medium text-sm cursor-pointer">
+        <li
+          className={`hover:text-accent font-medium text-sm cursor-pointer ${
+            path === "/rent" && "text-accent"
+          }`}
+        >
           Rent
         </li>
-        <li className="hover:text-accent font-medium text-sm cursor-pointer">
+        <li
+          className={`hover:text-accent font-medium text-sm cursor-pointer ${
+            path === "/commercial" && "text-accent"
+          }`}
+        >
           Commercial
         </li>
       </ul>
@@ -43,19 +50,30 @@ const Navbar = () => {
       </Link>
 
       <div className="flex gap-2 items-center">
-        <Button className="flex gap-1">
+        <Button className="flex gap-1 ">
           <Plus className="h-4 w-4" />
           Post an Ad
         </Button>
-        {isSignedIn ? (
-          <UserButton />
-        ) : (
-          <Link href={"/sign-in"}>
+        <SignedIn>
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                avatarBox: "h-10 w-10 ",
+              },
+              variables: {
+                colorPrimary: "#FF4D4D",
+              },
+            }}
+          />
+        </SignedIn>
+        <SignedOut>
+          <Link href="/sign-in">
             <Button variant="outline" className="hover:text-white">
               Log in
             </Button>
           </Link>
-        )}
+        </SignedOut>
       </div>
     </div>
   );
