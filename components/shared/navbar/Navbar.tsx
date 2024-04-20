@@ -50,10 +50,12 @@ const Navbar = () => {
       </Link>
 
       <div className="flex gap-2 items-center">
-        <Button className="flex gap-1 ">
-          <Plus className="h-4 w-4" />
-          Post an Ad
-        </Button>
+        <Link href={"/post-listing"}>
+          <Button className="flex gap-1 ">
+            <Plus className="h-4 w-4" />
+            Post an Ad
+          </Button>
+        </Link>
         <SignedIn>
           <UserButton
             afterSignOutUrl="/"
