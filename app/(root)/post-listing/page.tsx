@@ -1,7 +1,15 @@
-import { AutocompleteExample } from "@/components/autocomplete-example";
+"use client";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
+import { AlgeriaProvinces } from "@/lib/Algeria_provinces";
+import { useState } from "react";
 
 const PostListing = () => {
+  const [isLoading, setLoading] = useState(false);
+  const [isDisabled, setDisbled] = useState(false);
+  const [value, setValue] = useState<Option>();
+  console.log(value?.longitude, value?.latitude);
+
   return (
     <main className="mt-10 md:mx-12 lg:mx-48">
       <div className="flex flex-col gap-5 items-center justify-center p-10">
@@ -10,7 +18,15 @@ const PostListing = () => {
           <h2 className="text-gray-600">
             Enter Address which you want to list{" "}
           </h2>
-          <AutocompleteExample />
+          <AutoComplete
+            options={AlgeriaProvinces}
+            emptyMessage="No resulsts."
+            placeholder="Search for State in Algeria"
+            isLoading={isLoading}
+            onValueChange={setValue}
+            value={value}
+            disabled={isDisabled}
+          />
           <Button>Next</Button>
         </div>
       </div>
