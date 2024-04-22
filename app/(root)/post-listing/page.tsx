@@ -5,7 +5,9 @@ import { AlgeriaProvinces } from "@/lib/Algeria_provinces";
 import { createListing } from "@/lib/actions/listing.action";
 import { supabase } from "@/utils/supabase/client";
 import { useUser } from "@clerk/nextjs";
+import { Loader } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const PostListing = () => {
   const [isLoading, setLoading] = useState(false);
@@ -17,6 +19,7 @@ const PostListing = () => {
 
   const nextHandler = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from("listing")
         .insert([
@@ -29,9 +32,13 @@ const PostListing = () => {
         .select();
       if (data) {
         console.log("New listing has been added, ", data);
+        toast("New address added for listing");
       }
     } catch (error) {
       console.log(error);
+      toast("Server side error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,8 +59,11 @@ const PostListing = () => {
             value={value}
             disabled={isDisabled}
           />
-          <Button disabled={!value || !coordinates} onClick={nextHandler}>
-            Next
+          <Button
+            disabled={!value || !coordinates || isLoading}
+            onClick={nextHandler}
+          >
+            {isLoading ? <Loader className="animate-spin" /> : "Next"}
           </Button>
         </div>
       </div>

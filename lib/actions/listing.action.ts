@@ -10,9 +10,9 @@ interface CreateListingParams {
 }
 
 export async function createListing({ params: CreateListingParams }) {
-  const { address: value, coordinates, createdBy:user.id } = params;
+  const { value, coordinates, user } = params;
   const { data, error } = await supabase
     .from("listing")
-    .insert([{ address, cordinates, createdBy }])
+    .insert([{ address: value, coordinates, createdBy: user }])
     .select();
 }
