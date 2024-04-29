@@ -12,8 +12,61 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Formik } from "formik";
 import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { supabase } from "@/utils/supabase/client";
+import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+interface FormValues {
+  type: string;
+  propertyType: string;
+  bedroom?: number;
+  bathroom?: number;
+  builtIn?: number;
+  parking?: number;
+  lotSize?: number;
+  area?: number;
+  sellingPrice?: number;
+  hoa?: number;
+  description?: string;
+}
 
-const EditListing = () => {
+interface Props {
+  params: { id: string };
+}
+const EditListing = ({ params }: Props) => {
+  console.log(params);
+  const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    user && verifyUserRecord();
+  }, [user]);
+
+  const verifyUserRecord = async () => {
+    const { data, error } = await supabase
+      .from("listing")
+      .select("*")
+      .eq("createdBy", user?.primaryEmailAddress?.emailAddress)
+      .eq("id", params.id);
+
+    if (data && data.length <= 0) {
+      router.replace("/");
+    }
+  };
+
+  const onSubmitHandler = async (formValue: FormValues) => {
+    const { data, error } = await supabase
+      .from("listing")
+      .update(formValue)
+      .eq("id", params.id)
+      .select();
+
+    if (data) {
+      toast("Listing Updated and Published");
+    }
+  };
+
   return (
     <div className="md:px-10 my-10">
       <h2 className="font-bold text-2xl">Property Details</h2>
@@ -25,6 +78,7 @@ const EditListing = () => {
         }}
         onSubmit={(values) => {
           console.log(values);
+          onSubmitHandler(values);
         }}
       >
         {({ values, handleChange, handleSubmit }) => (
@@ -131,7 +185,7 @@ const EditListing = () => {
                   <Input
                     type="number"
                     placeholder="8000000"
-                    name="sellingPrice"
+                    name="price"
                     onChange={handleChange}
                   />
                 </div>
