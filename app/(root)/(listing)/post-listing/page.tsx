@@ -6,6 +6,7 @@ import { createListing } from "@/lib/actions/listing.action";
 import { supabase } from "@/utils/supabase/client";
 import { useUser } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -14,6 +15,7 @@ const PostListing = () => {
   const [isDisabled, setDisbled] = useState(false);
   const [value, setValue] = useState<Option>();
   const { user } = useUser();
+  const router = useRouter();
 
   const coordinates = { lat: value?.latitude, long: value?.longitude };
 
@@ -33,6 +35,7 @@ const PostListing = () => {
       if (data) {
         console.log("New listing has been added, ", data);
         toast("New address added for listing");
+        router.replace("/edit-listing/" + data[0].id);
       }
     } catch (error) {
       console.log(error);
