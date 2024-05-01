@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
+import FileUpload from "../_components/FileUpload";
+import { Loader } from "lucide-react";
 interface FormValues {
   type: string;
   propertyType: string;
@@ -35,11 +37,11 @@ interface Props {
   params: { id: string };
 }
 const EditListing = ({ params }: Props) => {
-  console.log(params);
   const { user } = useUser();
   const router = useRouter();
   const [listing, setListing] = useState<Partial<FormValues>>({});
-  console.log(listing?.type);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     user && verifyUserRecord();
@@ -61,6 +63,7 @@ const EditListing = ({ params }: Props) => {
     }
   };
   const onSubmitHandler = async (formValue: FormValues) => {
+    setLoading(true);
     const { data, error } = await supabase
       .from("listing")
       .update(formValue)
@@ -69,6 +72,34 @@ const EditListing = ({ params }: Props) => {
 
     if (data) {
       toast("Listing Updated and Published");
+    }
+    for (const image of images) {
+      const file = image;
+      const fileName = Date.now().toString();
+      const fileExt = fileName.split(".").pop();
+
+      const { data, error } = await supabase.storage
+        .from("listingImages")
+        .upload(`${fileName}`, file, {
+          contentType: `image/${fileExt}`,
+          upsert: false,
+        });
+
+      if (error) {
+        setLoading(false);
+        toast("Error while uploading images");
+      } else {
+        const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
+        const { data, error } = await supabase
+          .from("listingImages")
+          .insert([{ url: imageUrl, listing_id: params?.id }])
+          .select();
+
+        if (error) {
+          setLoading(false);
+        }
+      }
+      setLoading(false);
     }
   };
 
@@ -84,7 +115,6 @@ const EditListing = ({ params }: Props) => {
           fullName: user?.fullName,
         }}
         onSubmit={(values) => {
-          console.log(values);
           onSubmitHandler(values);
         }}
       >
@@ -93,7 +123,7 @@ const EditListing = ({ params }: Props) => {
             <div className="p-8 rounded-lg shadow-md flex flex-col gap-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-1">
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Choose Category</h2>
+                  <h2 className="text-lg text-gray-500">Choose Category</h2>
                   <RadioGroup
                     defaultValue={listing?.type}
                     onValueChange={(v) => (values.type = v)}
@@ -117,7 +147,7 @@ const EditListing = ({ params }: Props) => {
                   </RadioGroup>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Property Type</h2>
+                  <h2 className="text-lg text-gray-500">Property Type</h2>
                   <Select
                     onValueChange={(e) => (values.propertyType = e)}
                     name="propertyType"
@@ -143,7 +173,7 @@ const EditListing = ({ params }: Props) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-2">
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Bedroom</h2>
+                  <h2 className="text-lg text-gray-500">Bedroom</h2>
                   <Input
                     type="number"
                     placeholder="Ex.2"
@@ -153,7 +183,7 @@ const EditListing = ({ params }: Props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Bathroom</h2>
+                  <h2 className="text-lg text-gray-500">Bathroom</h2>
                   <Input
                     type="number"
                     placeholder="Ex.2"
@@ -163,7 +193,7 @@ const EditListing = ({ params }: Props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Built In</h2>
+                  <h2 className="text-lg text-gray-500">Built In</h2>
                   <Input
                     type="number"
                     placeholder="Ex.200 m²"
@@ -175,7 +205,7 @@ const EditListing = ({ params }: Props) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-1">
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Parking</h2>
+                  <h2 className="text-lg text-gray-500">Parking</h2>
                   <Input
                     type="number"
                     placeholder="Ex.2"
@@ -185,7 +215,7 @@ const EditListing = ({ params }: Props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Lot Size (m²)</h2>
+                  <h2 className="text-lg text-gray-500">Lot Size (m²)</h2>
                   <Input
                     type="number"
                     placeholder="Ex.250"
@@ -195,7 +225,7 @@ const EditListing = ({ params }: Props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Area</h2>
+                  <h2 className="text-lg text-gray-500">Area</h2>
                   <Input
                     type="number"
                     placeholder="Ex.200"
@@ -207,9 +237,7 @@ const EditListing = ({ params }: Props) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-12">
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">
-                    Selling Price (DZD)
-                  </h2>
+                  <h2 className="text-lg text-gray-500">Selling Price (DZD)</h2>
                   <Input
                     type="number"
                     placeholder="8000000"
@@ -219,7 +247,7 @@ const EditListing = ({ params }: Props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">
+                  <h2 className="text-lg text-gray-500">
                     Hoa (Per Month) (DZD)
                   </h2>
                   <Input
@@ -233,13 +261,19 @@ const EditListing = ({ params }: Props) => {
               </div>
               <div className="grid grid-cols-1 gap-10">
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-lg text-slate-600">Description</h2>
+                  <h2 className="text-lg text-gray-500">Description</h2>
                   <Textarea
                     placeholder=""
                     name="description"
                     defaultValue={listing?.description}
                   />
                 </div>
+              </div>
+              <div>
+                <h2 className="font-lg text-gray-500 my-2">
+                  Add Property Images
+                </h2>
+                <FileUpload setImages={(value: any) => setImages(value)} />
               </div>
               <div className="flex gap-5 justify-end">
                 <Button
@@ -248,7 +282,13 @@ const EditListing = ({ params }: Props) => {
                 >
                   Save
                 </Button>
-                <Button className="">Save & Publish</Button>
+                <Button disabled={loading} className="">
+                  {loading ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Save & Publish"
+                  )}
+                </Button>
               </div>
             </div>
           </form>
