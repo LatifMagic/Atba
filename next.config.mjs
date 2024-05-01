@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    domains: ["arfkxhleknxsshlloeqb.supabase.co"],
+  },
+};
 
 export default nextConfig;
