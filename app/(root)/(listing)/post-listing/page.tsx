@@ -2,7 +2,6 @@
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import { AlgeriaProvinces } from "@/lib/Algeria_provinces";
-import { createListing } from "@/lib/actions/listing.action";
 import { supabase } from "@/utils/supabase/client";
 import { useUser } from "@clerk/nextjs";
 import { Loader } from "lucide-react";

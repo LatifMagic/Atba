@@ -5,8 +5,6 @@ import { useState } from "react";
 const FileUpload = ({ setImages, imageList }) => {
   const [imagePreview, setImagePreview] = useState<string[]>([]);
 
-  console.log(imageList);
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     setImages(files);
@@ -73,7 +71,6 @@ const FileUpload = ({ setImages, imageList }) => {
           </div>
         ))}
       </div>
-
       {imageList && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10 gap-3 mt-3">
           {imageList?.map((image: any, index: number) => (

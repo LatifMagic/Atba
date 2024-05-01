@@ -12,13 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Formik } from "formik";
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
-import FileUpload from "../_components/FileUpload";
 import { Loader } from "lucide-react";
+import FileUpload from "@/components/shared/FileUpload";
 interface FormValues {
   type: string;
   propertyType: string;
