@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Formik } from "formik";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
@@ -26,7 +26,7 @@ interface FormValues {
   parking?: number;
   lotSize?: number;
   area?: number;
-  sellingPrice?: number;
+  price?: number;
   hoa?: number;
   description?: string;
 }
@@ -38,6 +38,8 @@ const EditListing = ({ params }: Props) => {
   console.log(params);
   const { user } = useUser();
   const router = useRouter();
+  const [listing, setListing] = useState<Partial<FormValues>>({});
+  console.log(listing?.type);
 
   useEffect(() => {
     user && verifyUserRecord();
@@ -50,11 +52,14 @@ const EditListing = ({ params }: Props) => {
       .eq("createdBy", user?.primaryEmailAddress?.emailAddress)
       .eq("id", params.id);
 
+    if (data) {
+      setListing(data[0]);
+    }
+
     if (data && data.length <= 0) {
       router.replace("/");
     }
   };
-
   const onSubmitHandler = async (formValue: FormValues) => {
     const { data, error } = await supabase
       .from("listing")
@@ -73,8 +78,10 @@ const EditListing = ({ params }: Props) => {
 
       <Formik
         initialValues={{
-          type: "sell",
+          type: "Sell",
           propertyType: "",
+          profileImage: user?.imageUrl,
+          fullName: user?.fullName,
         }}
         onSubmit={(values) => {
           console.log(values);
@@ -88,15 +95,23 @@ const EditListing = ({ params }: Props) => {
                 <div className="flex flex-col gap-2">
                   <h2 className="text-lg text-slate-600">Choose Category</h2>
                   <RadioGroup
-                    defaultValue="Sell"
+                    defaultValue={listing?.type}
                     onValueChange={(v) => (values.type = v)}
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Sell" id="Sell" />
+                      {listing?.type === "Sell" ? (
+                        <RadioGroupItem value="Sell" id="Sell" checked />
+                      ) : (
+                        <RadioGroupItem value="Sell" id="Sell" />
+                      )}
                       <Label htmlFor="Sell">Sell</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Rent" id="Rent" />
+                      {listing?.type === "Rent" ? (
+                        <RadioGroupItem value="Rent" id="Rent" checked />
+                      ) : (
+                        <RadioGroupItem value="Rent" id="Rent" />
+                      )}
                       <Label htmlFor="Rent">Rent</Label>
                     </div>
                   </RadioGroup>
@@ -106,10 +121,17 @@ const EditListing = ({ params }: Props) => {
                   <Select
                     onValueChange={(e) => (values.propertyType = e)}
                     name="propertyType"
+                    defaultValue={listing?.propertyType}
                     required
                   >
                     <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Select Property Type" />
+                      <SelectValue
+                        placeholder={
+                          listing?.propertyType
+                            ? listing.propertyType
+                            : "Select Property Type"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="House">House</SelectItem>
@@ -125,6 +147,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="Ex.2"
+                    defaultValue={listing?.bedroom}
                     name="bedroom"
                     onChange={handleChange}
                   />
@@ -134,6 +157,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="Ex.2"
+                    defaultValue={listing?.bathroom}
                     name="bathroom"
                     onChange={handleChange}
                   />
@@ -143,6 +167,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="Ex.200 m²"
+                    defaultValue={listing?.builtIn}
                     name="builtIn"
                     onChange={handleChange}
                   />
@@ -154,6 +179,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="Ex.2"
+                    defaultValue={listing?.parking}
                     name="parking"
                     onChange={handleChange}
                   />
@@ -163,6 +189,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="Ex.250"
+                    defaultValue={listing?.lotSize}
                     name="lotSize"
                     onChange={handleChange}
                   />
@@ -172,6 +199,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="Ex.200"
+                    defaultValue={listing?.area}
                     name="area"
                     onChange={handleChange}
                   />
@@ -185,6 +213,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="8000000"
+                    defaultValue={listing?.price}
                     name="price"
                     onChange={handleChange}
                   />
@@ -196,6 +225,7 @@ const EditListing = ({ params }: Props) => {
                   <Input
                     type="number"
                     placeholder="25000"
+                    defaultValue={listing?.hoa}
                     name="hoa"
                     onChange={handleChange}
                   />
@@ -204,7 +234,11 @@ const EditListing = ({ params }: Props) => {
               <div className="grid grid-cols-1 gap-10">
                 <div className="flex flex-col gap-2">
                   <h2 className="text-lg text-slate-600">Description</h2>
-                  <Textarea placeholder="" name="description" />
+                  <Textarea
+                    placeholder=""
+                    name="description"
+                    defaultValue={listing?.description}
+                  />
                 </div>
               </div>
               <div className="flex gap-5 justify-end">
