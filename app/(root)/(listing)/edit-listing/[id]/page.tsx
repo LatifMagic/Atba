@@ -50,11 +50,13 @@ const EditListing = ({ params }: Props) => {
   const verifyUserRecord = async () => {
     const { data, error } = await supabase
       .from("listing")
-      .select("*")
+      .select("*,listingImages(listing_id,url)")
       .eq("createdBy", user?.primaryEmailAddress?.emailAddress)
       .eq("id", params.id);
 
     if (data) {
+      console.log(data);
+
       setListing(data[0]);
     }
 
@@ -110,7 +112,7 @@ const EditListing = ({ params }: Props) => {
       <Formik
         initialValues={{
           type: "Sell",
-          propertyType: "",
+          propertyType: listing?.propertyType || "",
           profileImage: user?.imageUrl,
           fullName: user?.fullName,
         }}
@@ -273,7 +275,11 @@ const EditListing = ({ params }: Props) => {
                 <h2 className="font-lg text-gray-500 my-2">
                   Add Property Images
                 </h2>
-                <FileUpload setImages={(value: any) => setImages(value)} />
+                <FileUpload
+                  setImages={(value: any) => setImages(value)}
+                  // @ts-ignore
+                  imageList={listing?.listingImages}
+                />
               </div>
               <div className="flex gap-5 justify-end">
                 <Button
