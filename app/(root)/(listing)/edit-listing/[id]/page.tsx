@@ -19,6 +19,18 @@ import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import FileUpload from "@/components/shared/FileUpload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 interface FormValues {
   type: string;
   propertyType: string;
@@ -32,7 +44,6 @@ interface FormValues {
   hoa?: number;
   description?: string;
 }
-
 interface Props {
   params: { id: string };
 }
@@ -74,8 +85,10 @@ const EditListing = ({ params }: Props) => {
 
     if (data) {
       toast("Listing Updated and Published");
+      setLoading(false);
     }
     for (const image of images) {
+      setLoading(true);
       const file = image;
       const fileName = Date.now().toString();
       const fileExt = fileName.split(".").pop();
@@ -97,11 +110,29 @@ const EditListing = ({ params }: Props) => {
           .insert([{ url: imageUrl, listing_id: params?.id }])
           .select();
 
+        if (data) {
+          setLoading(false);
+        }
+
         if (error) {
           setLoading(false);
         }
       }
       setLoading(false);
+    }
+  };
+
+  const publishBtnHandler = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("listing")
+      .update({ active: true })
+      .eq("id", params?.id)
+      .select();
+
+    if (data) {
+      setLoading(false);
+      toast("Listing Published Successfully🎉");
     }
   };
 
@@ -116,10 +147,12 @@ const EditListing = ({ params }: Props) => {
           profileImage: user?.imageUrl,
           fullName: user?.fullName,
         }}
+        // @ts-ignore
         onSubmit={(values) => {
           onSubmitHandler(values);
         }}
       >
+        {/* @ts-ignore */}
         {({ values, handleChange, handleSubmit }) => (
           <form onSubmit={handleSubmit}>
             <div className="p-8 rounded-lg shadow-md flex flex-col gap-4">
@@ -283,18 +316,42 @@ const EditListing = ({ params }: Props) => {
               </div>
               <div className="flex gap-5 justify-end">
                 <Button
+                  disabled={loading}
                   variant="outline"
                   className="text-primary border-primary hover:text-white hover:border-accent"
                 >
-                  Save
+                  {loading ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
-                <Button disabled={loading} className="">
-                  {loading ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Save & Publish"
-                  )}
-                </Button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" disabled={loading} className="">
+                      {loading ? (
+                        <Loader className="animate-spin" />
+                      ) : (
+                        "Submit & Publish"
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Ready to Publish?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Do you really want to publish the listing?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => publishBtnHandler()}>
+                        {loading ? (
+                          <Loader className="animate-spin" />
+                        ) : (
+                          "Continue"
+                        )}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </form>
