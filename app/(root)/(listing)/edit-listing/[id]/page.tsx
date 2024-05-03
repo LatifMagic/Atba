@@ -19,17 +19,8 @@ import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import FileUpload from "@/components/shared/FileUpload";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
+import PublishDialog from "@/components/PublishDialog";
 
 interface FormValues {
   type: string;
@@ -323,35 +314,10 @@ const EditListing = ({ params }: Props) => {
                   {loading ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button type="button" disabled={loading} className="">
-                      {loading ? (
-                        <Loader className="animate-spin" />
-                      ) : (
-                        "Submit & Publish"
-                      )}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Ready to Publish?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Do you really want to publish the listing?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => publishBtnHandler()}>
-                        {loading ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          "Continue"
-                        )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <PublishDialog
+                  loading={loading}
+                  publishBtnHandler={publishBtnHandler}
+                />
               </div>
             </div>
           </form>
