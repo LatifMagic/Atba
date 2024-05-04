@@ -20,21 +20,8 @@ import { useUser } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import FileUpload from "@/components/shared/FileUpload";
 
-import PublishDialog from "@/components/PublishDialog";
+import PublishDialog from "@/components/shared/PublishDialog";
 
-interface FormValues {
-  type: string;
-  propertyType: string;
-  bedroom?: number;
-  bathroom?: number;
-  builtIn?: number;
-  parking?: number;
-  lotSize?: number;
-  area?: number;
-  price?: number;
-  hoa?: number;
-  description?: string;
-}
 interface Props {
   params: { id: string };
 }
@@ -130,7 +117,6 @@ const EditListing = ({ params }: Props) => {
   return (
     <div className="md:px-10 my-10">
       <h2 className="font-bold text-2xl">Property Details</h2>
-
       <Formik
         initialValues={{
           type: "Sell",
