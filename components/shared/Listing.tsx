@@ -1,3 +1,4 @@
+import { ListingProps } from "@/types";
 import { Bath, BedDouble, MapPin, Ruler } from "lucide-react";
 import Image from "next/image";
 

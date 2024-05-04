@@ -3,6 +3,7 @@ import { supabase } from "@/utils/supabase/client";
 import Listing from "./Listing";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ListingProps } from "@/types";
 
 interface Props {
   type: string;

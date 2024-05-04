@@ -1,4 +1,4 @@
-interface FormValues {
+export interface FormValues {
   type: string;
   propertyType: string;
   bedroom?: number;
@@ -12,7 +12,7 @@ interface FormValues {
   description?: string;
 }
 
-interface ListingProps {
+export interface ListingProps {
   id: number;
   created_at: Date;
   address: string;

@@ -21,6 +21,7 @@ import { Loader } from "lucide-react";
 import FileUpload from "@/components/shared/FileUpload";
 
 import PublishDialog from "@/components/shared/PublishDialog";
+import { FormValues } from "@/types";
 
 interface Props {
   params: { id: string };
