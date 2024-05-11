@@ -8,7 +8,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { useState, useRef, useCallback, type KeyboardEvent } from "react";
 
 import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, statesOfAlgeria } from "@/lib/utils";
 import { Skeleton } from "./skeleton";
 
 export type Option = Record<"name", string> & Record<string, string>;
@@ -133,7 +133,9 @@ export const AutoComplete = ({
                         )}
                       >
                         {isSelected ? <Check className="w-4" /> : null}
-                        {option.name}
+                        {option.name +
+                          `, ` +
+                          statesOfAlgeria[Number(option.wilaya_id)]}
                       </CommandItem>
                     );
                   })}

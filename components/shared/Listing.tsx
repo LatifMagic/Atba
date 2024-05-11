@@ -36,9 +36,9 @@ const Listing = ({ listing }: Props) => {
                   <h2 className="text-lg font-semibold">
                     {formatPrice(item?.price)}
                   </h2>
-                  <h2 className="flex gap-1 text-sm text-gray-400">
+                  <h2 className="flex gap-1 text-sm text-gray-500/90">
                     <MapPin className="h-4 w-4" />
-                    {item?.address}
+                    {item?.address}, {item?.wilaya}
                   </h2>
 
                   <p className=" text-gray-900">Beautiful House</p>

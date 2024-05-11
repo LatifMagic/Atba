@@ -16,6 +16,7 @@ export interface ListingProps {
   id: number;
   created_at: Date;
   address: string;
+  wilaya: string;
   coordinates: string;
   createdBy: string;
   active: boolean;
