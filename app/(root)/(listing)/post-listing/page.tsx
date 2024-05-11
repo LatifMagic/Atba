@@ -1,7 +1,9 @@
 "use client";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
-import { AlgeriaProvinces } from "@/lib/Algeria_provinces";
+import { AlgeriaCities } from "@/lib/AlgeriaCities";
+import { AlgeriaProvinces } from "@/lib/AlgeriaProvinces";
+import { statesOfAlgeria } from "@/lib/utils";
 import { supabase } from "@/utils/supabase/client";
 import { useUser } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
@@ -26,6 +28,7 @@ const PostListing = () => {
         .insert([
           {
             address: value?.name,
+            wilaya: statesOfAlgeria[Number(value?.wilaya_id)],
             coordinates,
             createdBy: user?.primaryEmailAddress?.emailAddress,
           },
@@ -53,8 +56,8 @@ const PostListing = () => {
             Enter Address which you want to list
           </h2>
           <AutoComplete
-            options={AlgeriaProvinces}
-            emptyMessage="No resulsts."
+            options={AlgeriaCities}
+            emptyMessage="No results."
             placeholder="Search for State in Algeria"
             isLoading={isLoading}
             onValueChange={setValue}
