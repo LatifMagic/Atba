@@ -133,9 +133,11 @@ export const AutoComplete = ({
                         )}
                       >
                         {isSelected ? <Check className="w-4" /> : null}
-                        {option.name +
-                          `, ` +
-                          statesOfAlgeria[Number(option.wilaya_id)]}
+                        {option.wilaya_id
+                          ? option.name +
+                            `, ` +
+                            statesOfAlgeria[Number(option.wilaya_id)]
+                          : option.name}
                       </CommandItem>
                     );
                   })}
