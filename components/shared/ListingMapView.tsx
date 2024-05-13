@@ -5,35 +5,19 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ListingProps } from "@/types";
 import { usePathname } from "next/navigation";
+import { Option } from "../ui/autocomplete";
 
 interface Props {
-  type: string;
+  address: Option | undefined;
+  getLatestListing: () => void;
+  listing: ListingProps[];
 }
 
-const ListingMapView = ({ type }: Props) => {
-  const [listing, setListing] = useState<ListingProps[]>([]);
+const ListingMapView = ({ address, getLatestListing, listing }: Props) => {
   const path = usePathname();
   useEffect(() => {
     getLatestListing();
   }, []);
-
-  const getLatestListing = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("listing")
-        .select(`*,listingImages(url,listing_id)`)
-        .eq("active", true)
-        .eq("type", type)
-        .order("id", { ascending: false });
-
-      if (data) {
-        setListing(Array.isArray(data) ? data : [data]);
-      }
-    } catch (error) {
-      console.log(error);
-      toast("The data did not get fetched");
-    }
-  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2">
@@ -41,7 +25,11 @@ const ListingMapView = ({ type }: Props) => {
         <h2 className="mb-4 text-xl font-medium text-gray-800">
           Properties for {path === "/rent" ? "Rent" : "Sale"} in Algeria
         </h2>
-        <Listing listing={listing} />
+        {listing.length > 0 ? (
+          <Listing listing={listing} />
+        ) : (
+          <h3>There is no property posted in this Wilaya.</h3>
+        )}
       </div>
       <div>Map</div>
     </div>
